@@ -4023,6 +4023,7 @@ int run_iter_bw(struct pingpong_context *ctx,struct perftest_parameters *user_pa
 	uintptr_t		primary_send_addr = ctx->sge_list[0].addr;
 	int			address_offset = 0;
 	int			flows_burst_iter = 0;
+	cycles_t elapsed_post_send = 0, tmp_start_cycles, tmp_stop_cycles;
 
 	struct dyn_poll_ctx *dyn_ctx = init_dyn_poll_ctx(user_param);
 	if (!dyn_ctx) {
@@ -4129,12 +4130,11 @@ int run_iter_bw(struct pingpong_context *ctx,struct perftest_parameters *user_pa
 				if (user_param->test_type == DURATION && user_param->state == END_STATE)
 					break;
 
-				err = post_send_method(ctx, index, user_param);
-				if (err) {
-					fprintf(stderr,"Couldn't post send: qp %d scnt=%lu \n",index,ctx->scnt[index]);
-					return_value = FAILURE;
-					goto cleaning;
-				}
+			/* capture the cycles consumed by post_send_method() */
+			tmp_start_cycles = get_cycles();
+			err = post_send_method(ctx, index, user_param);
+			tmp_stop_cycles = get_cycles();
+			elapsed_post_send += tmp_stop_cycles - tmp_start_cycles;
 
 				/* if we have more than single flow and the burst iter is the last one */
 				if (user_param->flows != DEF_FLOWS) {
@@ -4238,6 +4238,10 @@ int run_iter_bw(struct pingpong_context *ctx,struct perftest_parameters *user_pa
 	}
 	if (user_param->noPeak == ON && user_param->test_type == ITERATIONS)
 		user_param->tcompleted[0] = get_cycles();
+
+	/* print out the stats */
+	printf("***** elapsed-post-send-cycles: %ld*****\n",
+	       elapsed_post_send);
 
 cleaning:
 	free(dyn_ctx);

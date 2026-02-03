@@ -18,7 +18,7 @@ struct host_memory_ctx {
 };
 
 
-#define HUGEPAGE_ALIGN  (2*1024*1024)
+#define HUGEPAGE_ALIGN  (1*1024*1024*1024)
 #define SHMAT_ADDR (void *)(0x0UL)
 #define SHMAT_FLAGS (0)
 #define SHMAT_INVALID_PTR ((void *)-1)
