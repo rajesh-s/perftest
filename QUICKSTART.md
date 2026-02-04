@@ -90,3 +90,4 @@ sudo taskset -c 92 ./ib_write_bw -d <device> <server_ip> \
 | `-t 4096` | Message/transfer size in bytes |
 | `-N` | No peak (disable peak bandwidth calculation) |
 | `--report-both` | Report both bandwidth and latency |
+```

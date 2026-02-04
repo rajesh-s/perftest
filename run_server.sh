@@ -1,0 +1,1 @@
+sudo taskset -c 92 ./ib_write_bw -d roceP22p1s0 -x 3 -F --report_gbits -a -n 1000000 -Q 1024 -t 4096 -N --report-both --use_hugepages
